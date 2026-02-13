@@ -38,25 +38,26 @@ def predict():
 
     data = request.get_json()
 
-    # If single object is sent, convert to list
-    if isinstance(data, dict):
-        data = [data]
-
-    # Convert list of JSON → DataFrame
-    df = preprocess(data)
-
-    # Predict for all rows
-    preds = model.predict(df)
+    # Must be list
+    if not isinstance(data, list):
+        return jsonify({"error": "Input must be a list of objects"}), 400
 
     results = []
 
-    for i, pred in enumerate(preds):
+    for item in data:
 
-        row_df = df.iloc[[i]]
+        # Preprocess ONE record
+        df = preprocess(item)
 
-        # Drift check per row
-        if detect_drift(train_stats, row_df[num_cols]):
-            save_drift(row_df)
+        if df is None or df.empty:
+            return jsonify({"error": "Invalid input data"}), 400
+
+        # Predict ONE record
+        pred = model.predict(df)[0]
+
+        # Drift check
+        if detect_drift(train_stats, df[num_cols]):
+            save_drift(df)
 
         results.append(float(pred))
 
