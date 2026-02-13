@@ -38,6 +38,8 @@ def predict():
 
     data = request.get_json()
 
+    print(data)
+
     # Must be list
     if not isinstance(data, list):
         return jsonify({"error": "Input must be a list of objects"}), 400
@@ -48,6 +50,8 @@ def predict():
 
         # Preprocess ONE record
         df = preprocess(item)
+
+  
 
         if df is None or df.empty:
             return jsonify({"error": "Invalid input data"}), 400
