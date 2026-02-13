@@ -6,3 +6,4 @@ joblib
 scipy
 prometheus-client
 requests
+logger

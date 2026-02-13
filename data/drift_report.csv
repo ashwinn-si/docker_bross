@@ -1,0 +1,4 @@
+Feature,Original_Mean,Drift_Mean,Percent_Change,Drift
+Day_of_Year,181.02,11.54,-93.63,YES
+Start_Hour,11.47,6.0,-47.69,YES
+End_Hour,11.48,169.79,1379.21,YES
