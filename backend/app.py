@@ -2,13 +2,20 @@ from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
 import os
+import logger
+import logging
 
 from drift import detect_drift, save_drift
 from preprocess import preprocess
 
 
 app = Flask(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
 
+logger = logging.getLogger(__name__)
 
 # Get project root directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,7 +45,7 @@ def predict():
 
     data = request.get_json()
 
-    print(data)
+    logger.info(f"Received data: {data}")
 
     # Must be list
     if not isinstance(data, list):
@@ -78,4 +85,4 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=8080)
