@@ -36,18 +36,34 @@ train_stats = {
 @app.route("/predict", methods=["POST"])
 def predict():
 
-    data = request.json
+    data = request.get_json()
 
+    # If single object is sent, convert to list
+    if isinstance(data, dict):
+        data = [data]
+
+    # Convert list of JSON → DataFrame
     df = preprocess(data)
 
-    pred = model.predict(df)[0]
+    # Predict for all rows
+    preds = model.predict(df)
 
-    # Drift check
-    if detect_drift(train_stats, df[num_cols]):
+    results = []
 
-        save_drift(df)
+    for i, pred in enumerate(preds):
 
-    return jsonify({"prediction": float(pred)})
+        row_df = df.iloc[[i]]
+
+        # Drift check per row
+        if detect_drift(train_stats, row_df[num_cols]):
+            save_drift(row_df)
+
+        results.append(float(pred))
+
+    return jsonify({
+        "predictions": results
+    })
+
 
 
 
